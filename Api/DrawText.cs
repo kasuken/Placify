@@ -12,12 +12,15 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using System.Text;
 using System;
+using StackExchange.Redis;
 
 namespace BlazorApp.Api
 {
     public class DrawText
     {
         private readonly ILogger<DrawText> _logger;
+
+        //private readonly ICacheConnector _cacheConnector;
 
         public DrawText(ILogger<DrawText> log)
         {
@@ -32,7 +35,9 @@ namespace BlazorApp.Api
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "DrawText/{width:int}/{height:int}")] HttpRequest req, int width, int height)
         {
             _logger.LogInformation("DrawText function processed a request.");
-            
+
+            //_redisConnection = await RedisConnection.InitializeAsync(connectionString: ConfigurationManager.AppSettings["CacheConnection"].ToString());
+
             var contentType = "image/png";
             var imageWidth = width;
             var imageHeight = height;
