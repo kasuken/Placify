@@ -4,6 +4,10 @@ Placify is a SaaS image placeholder service. It allows you to create and manage 
 
 ![](https://www.placify.xyz/api/draw/1920/768)
 
+## Production Environment
+
+You can find the application at this link: [https://www.placify.xyz](https://www.placify.xyz)
+
 ## How it works
 
 It's very simple, you can add an img tag in your HTML page and it will be replaced with a placeholder image.
