@@ -14,7 +14,7 @@ namespace BlazorApp.Api
 
             builder.Services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = configuration["RediConnection"];
+                options.Configuration = configuration["RedisConnection"];
             });
         }
     }
