@@ -43,7 +43,11 @@ Set as Startup Projects the Api project and the Client project.
 - Azure Functions Tools
 - Azure Redis Cache instance
 
-## Deployment
+### Deployment
 
 The deployment process is automated by GitHub Actions.
 The application is deployed to an Azure Static Web App.
+
+### Development Timelapse
+
+https://user-images.githubusercontent.com/2757486/186433873-9fceede9-54ed-4552-a300-75ef4226142b.mp4
