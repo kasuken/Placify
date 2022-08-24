@@ -51,7 +51,6 @@ namespace BlazorApp.Api
                 };
             }
 
-            var s = new StringBuilder();
             using var ms = new MemoryStream();
 
             using Bitmap bitmap = new Bitmap(imageWidth, imageHeight);
