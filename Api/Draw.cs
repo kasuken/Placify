@@ -9,40 +9,49 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 using System.Text;
 using System;
-using StackExchange.Redis;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace BlazorApp.Api
 {
-    public class DrawText
+    public class Draw
     {
-        private readonly ILogger<DrawText> _logger;
+        private readonly ILogger<Draw> _logger;
+        private IDistributedCache _cache;
 
-        //private readonly ICacheConnector _cacheConnector;
-
-        public DrawText(ILogger<DrawText> log)
+        public Draw(ILogger<Draw> log, IDistributedCache cache)
         {
             _logger = log;
+            _cache = cache;
         }
 
-        [FunctionName("DrawText")]
+        [FunctionName("Draw")]
         [OpenApiOperation(operationId: "Run", tags: new[] { "name" })]
         [OpenApiParameter(name: "s", In = ParameterLocation.Query, Required = true, Type = typeof(string), Description = "The **s** parameter")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "image/png", bodyType: typeof(string), Description = "The Image response")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "DrawText/{width:int}/{height:int}")] HttpRequest req, int width, int height)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Draw/{width:int}/{height:int}")] HttpRequest req, int width, int height)
         {
-            _logger.LogInformation("DrawText function processed a request.");
-
-            //_redisConnection = await RedisConnection.InitializeAsync(connectionString: ConfigurationManager.AppSettings["CacheConnection"].ToString());
+            _logger.LogInformation("Draw function processed a request.");
 
             var contentType = "image/png";
             var imageWidth = width;
             var imageHeight = height;
 
-            StringBuilder s = new StringBuilder();
+            string cacheKey = $"{imageWidth}*{imageHeight}";
+
+            var cachedItem = await _cache.GetAsync(cacheKey);
+            
+            if (cachedItem != null)
+            {
+                return new FileContentResult(cachedItem, contentType)
+                {
+                    FileDownloadName = Guid.NewGuid() + ".png"
+                };
+            }
+
+            var s = new StringBuilder();
             using var ms = new MemoryStream();
 
             using Bitmap bitmap = new Bitmap(imageWidth, imageHeight);
@@ -62,6 +71,8 @@ namespace BlazorApp.Api
             }
 
             bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+
+            await _cache.SetAsync(cacheKey, ms.ToArray(), new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromDays(7) });
 
             return new FileContentResult(ms.ToArray(), contentType)
             {
