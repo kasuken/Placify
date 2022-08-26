@@ -13,7 +13,7 @@ You can find the application at this link: [https://www.placify.xyz](https://www
 It's very simple, you can add an img tag in your HTML page and it will be replaced with a placeholder image.
 
 ```html
-<img src="https://www.placify.xyz/api/draw/1920/768>
+<img src="https://www.placify.xyz/api/draw/1920/768">
 ```
 
 ### How the data is stored:
